@@ -1,14 +1,10 @@
 /* TP BASE DE DATOS 1
-INTEGRANTES: 
-MATEO ROVERE
-ENZO FERRARI
-MARISA ZAPPALA
-FABIAN CORREA
 */
+
 CREATE DATABASE CINE
 GO
 USE CINE
--- Ejercicio 2: Instrucciones de SQL para la creaci髇 de las tablas
+-- Ejercicio 2: Instrucciones de SQL para la creaci贸n de las tablas
 CREATE TABLE Sucursal (
 	ID_Suc smallint PRIMARY KEY IDENTITY,
 	ciudadSuc varchar(20));
@@ -52,22 +48,22 @@ ADD UNIQUE(fecha, hora, ID_Sala);
 ALTER TABLE Butaca
 ADD UNIQUE(ubicacion, fecha, hora, ID_Sala);
 
--- Ejercicio 3: Inserci髇 de datos
+-- Ejercicio 3: Inserci贸n de datos
 --a) Las tres sucursales
 INSERT INTO Sucursal (ciudadSuc)
-VALUES ('Rosario'), ('C髍doba'), ('La Plata');
+VALUES ('Rosario'), ('C贸rdoba'), ('La Plata');
 
 --b) Al menos 3 salas por sucursal
 INSERT INTO Sala (ID_Suc, cantBut)
 VALUES (1, 20), (1, 25), (1, 30), (1,30), (2, 30), (2, 25), (2,25), (3, 20), (3,25) , (3,20)
---c) Al menos 5 pel韈ulas
+--c) Al menos 5 pel铆culas
 INSERT INTO Pelicula
 VALUES 
 	('Argentina, 1985', 0, 'Drama'),
-	('Star Wars III', 1, 'Ciencia ficci髇'),
-	('Batman: El Caballero de la noche', 0, 'Acci髇'),
+	('Star Wars III', 1, 'Ciencia ficci贸n'),
+	('Batman: El Caballero de la noche', 0, 'Acci贸n'),
 	('Rio', 1, 'Comedia'),
-	('Scarface', 0, 'Acci髇'),
+	('Scarface', 0, 'Acci贸n'),
 	('Chucky', 0, 'Suspenso');
 -- 0 = no ATP, 1 = ATP
 
@@ -185,7 +181,7 @@ SET precio = 200
 where ciudadSuc = 'Rosario'
 UPDATE Sucursal
 SET precio = 250
-where ciudadSuc = 'C髍doba'
+where ciudadSuc = 'C贸rdoba'
 UPDATE Sucursal
 SET precio = 300
 where ciudadSuc = 'la Plata'
@@ -220,7 +216,7 @@ where nombrePel= 'Chucky'
 --diferentes de butacas dependiendo si esta o no dentro de un rango de butacas "premium"
 
 -- Ejercicio 6:
--- a) Total recaudado por funci髇
+-- a) Total recaudado por funci贸n
 
 INSERT INTO Butaca (ubicacion, vendida, fecha, hora, ID_Sala)
 VALUES
@@ -531,10 +527,10 @@ WHERE
 (Butaca.vendida = 1)
 GROUP BY ID_Func , Pelicula.nombrePel
 
--- b Determinar promedio recaudado por funcion para cada pel韈ula.
--- Respecto del id de la pel韈ula, hallar el promedio tomando todas las funciones sobre esa pel韈ula
+-- b Determinar promedio recaudado por funcion para cada pel铆cula.
+-- Respecto del id de la pel铆cula, hallar el promedio tomando todas las funciones sobre esa pel铆cula
 
-SELECT nombrePel , AVG(Funcion_Promedio.Total_recaudado) as 'Promedio recaudado por funci髇'
+SELECT nombrePel , AVG(Funcion_Promedio.Total_recaudado) as 'Promedio recaudado por funci贸n'
 FROM
 (SELECT ID_Func , Pelicula.nombrePel, sum(precio) as 'Total_recaudado'
 FROM Funcion , Butaca, Pelicula
