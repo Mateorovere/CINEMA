@@ -1,6 +1,3 @@
-/* TP BASE DE DATOS 1
-*/
-
 CREATE DATABASE CINE
 GO
 USE CINE
@@ -587,3 +584,102 @@ GROUP BY ID_Func, Pelicula.nombrePel
 	
 	ON Funcion_Total.nombrePel = tmp.nombrePel AND Funcion_Total.Total_recaudado < tmp.Total_Recaudado
 WHERE tmp.Total_recaudado IS NULL
+
+----------------------------------------
+--Trabajo Practico 2:
+--2)
+--  Nosotros lo penszamos de la manera que para cada plan hay que subscribirse, incluso en el plan gratuito
+CREATE TABLE Usuarios (
+	NombreUsuario varchar(50) PRIMARY KEY NOT NULL,
+	Contraseña varchar(50) NOT NULL,
+	TipoPlan varchar(10));
+
+CREATE TABLE Pagos (
+	IDPago int PRIMARY KEY IDENTITY NOT NULL,
+	NombreUsuario varchar(50) NOT NULL,
+	FechaComienzo date,
+	PlazoPlan int, -- representa la cantidad de días a agregar a la fecha de comienzo
+	TipoPlan varchar(10),
+	FOREIGN KEY (NombreUsuario) REFERENCES Usuarios(NombreUsuario));
+
+
+INSERT INTO Usuarios
+VALUES
+	('enzonob39','guemes','GRATUITO1'),
+	('marisa23','hola123','GRATUITO1'),
+	('mateoelmago','pelota','GRATUITO1'),
+	('fabian123','123fabian','GRATUITO1'),
+	('Usuario5','CONTRASENA5','GRATUITO1')
+
+INSERT INTO Pagos(NombreUsuario, FechaComienzo, PlazoPlan, TipoPlan)
+VALUES
+	('Usuario5','2020-12-09',365,'PREMIUM'),
+	('fabian123','2020-12-09',30,'FAMILIAR2'),
+	('mateoelmago','2021-01-1', 365,'GRATUITO'),
+	('marisa23','2022-5-2',30, 'FAMILIAR'),
+	('enzonob39','2022-9-1', 30, 'GRATUITO'),
+	('enzonob39','2022-8-1',30, 'PREMIUM'),
+	('enzonob39','2022-12-2',30,'GRATUITO'),
+	('marisa23','2022-12-2',30,'PREMIUM8'),
+	('mateoelmago','2022-12-05',30,'PREMIUM'),
+	('fabian123','2022-12-09',365,'FAMILIAR')
+
+
+SELECT * FROM Usuarios
+
+
+SELECT MAX(tmp.fecha) FROM
+	(SELECT DATEADD(DAY,Pagos.PlazoPlan,Pagos.FechaComienzo) AS fecha from Pagos) as tmp
+
+--3) AVANZANDO CON EL 3
+GO
+CREATE PROCEDURE pa_ActualizarPlanes
+
+AS 
+
+	
+
+UPDATE Usuarios
+SET TipoPlan = 'INACTIVO'
+WHERE 
+	(SELECT MAX(tmp.fecha) FROM
+	(SELECT DATEADD(DAY,Pagos.PlazoPlan,Pagos.FechaComienzo) AS fecha from Pagos WHERE Pagos.NombreUsuario = Usuarios.NombreUsuario) as tmp)
+	 < GETDATE()
+-- Seleccionar la fecha del último pago realizado de cada usuario, chequear si vence hoy.
+
+UPDATE Usuarios
+SET TipoPlan = Pagos.TipoPlan
+FROM Pagos
+WHERE 
+	(SELECT MAX(tmp.fecha) FROM
+	(SELECT DATEADD(DAY,Pagos.PlazoPlan,Pagos.FechaComienzo) AS fecha from Pagos WHERE Pagos.NombreUsuario = Usuarios.NombreUsuario) as tmp)
+	 > GETDATE()
+	 AND
+	(SELECT TipoPlan FROM 
+	(SELECT TOP 1 TipoPlan, DATEADD(DAY,Pagos.PlazoPlan,Pagos.FechaComienzo) AS fecha from Pagos 
+		WHERE Pagos.NombreUsuario = Usuarios.NombreUsuario
+		ORDER BY fecha DESC) AS t)
+	= Pagos.TipoPlan
+	 
+
+GO
+--4)
+GO
+
+CREATE PROCEDURE pa_Login
+@NombreUsuario varchar(50),
+@Contraseña varchar(50),
+@RESULTADO INT OUTPUT
+
+AS
+
+SELECT @RESULTADO = COUNT(*)
+FROM Usuarios
+WHERE NombreUsuario = @NombreUsuario and Contraseña = @Contraseña and TipoPlan is not NULL
+
+RETURN;
+GO
+
+DECLARE @RESULTADO int
+EXEC pa_Login 'enzonob39','guemes', @RESULTADO  OUTPUT
+SELECT @RESULTADO
